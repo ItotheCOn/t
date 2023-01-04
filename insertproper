@@ -1,0 +1,28 @@
+#include"stdio.h"
+#define SIZE 10
+int main(){
+    int item=0;
+    int i=0;
+    int tmp=0;
+    int arr[SIZE]={1,2,3,4,5,6,8,9,10};
+    printf("Enter data u wanna inserted: ");
+    scanf("%d",&item);
+    for(i=SIZE-2;item<arr[i] && i>=0;i--){
+        arr[i+1]=arr[i];
+        arr[i]=item;
+
+
+    }
+    for(int b=0;b<SIZE;b++){
+        printf("%3d",arr[b]);
+    }
+
+
+
+
+
+
+
+
+    return 0;
+}
