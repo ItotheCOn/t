@@ -1,0 +1,199 @@
+//1.To add data
+
+
+#include"stdio.h"
+#include"stdlib.h"
+#define SIZE 100
+
+struct Database{
+    int age;
+    char email[50];
+    char password[50];
+    char name[50];
+};
+struct Database db[100];
+int efound=-1;
+int pfound=-1;
+int checkmail=-1;
+void Adding_datatofile(void);
+int CharCounting(char tocount[50]);
+void Cmparemail(char Userinput[50]);
+void Passchecking(char pass[50],int userindex);
+void Login();
+void add_data(void);
+void Reading_datafromfile(void);
+int globalindex=0;
+void Usersection(void);
+void Registraion(void);
+void checking_registration(char userinput[50]);
+int recount=0;
+int main(){
+    Usersection();
+    //add_data();
+    return 0;
+}
+
+void Adding_datatofile(void){
+
+    FILE *fptr=fopen("Database.txt","a");
+    if(fptr==NULL){
+        printf("Error");
+    }else {
+        for (int i = 0; i < recount+1; i++) {
+            fprintf(fptr, "%s  %d  %s  %s\n", db[i].name, db[i].age, db[i].email, db[i].password);
+        }
+        printf("Adding all data to File has finished");
+    }
+fclose(fptr);
+}
+void Reading_datafromfile(void){
+    FILE *fptr=fopen("Database.txt","r");
+    if(fptr==NULL){
+        printf("Error");
+    }else{
+        for(int i=0;i<SIZE;i++) {
+            fscanf(fptr,"%s%d%s%s",db[i].name, &db[i].age, db[i].email, db[i].password);
+            if(db[i].name[0]=='\0'){
+                break;
+            }
+            globalindex++;
+        }
+    }
+}
+void Login(void){
+    char Inputmail[50];
+    char Inputpass[50];
+    printf("Enter Email :  ");
+    scanf("%s",&Inputmail);
+    efound=-1;
+    Cmparemail(Inputmail);
+    if(efound == -1){
+        printf("Enter valid Email Format\n");
+        Login();
+    }else {
+        printf("Enter Password: ");
+        scanf("%s", &Inputpass);
+        pfound = -1;
+        Passchecking(Inputpass, efound);
+        if (efound != -1 && pfound == 1) {
+            printf("Welcome Sir=%s\n", db[efound].name);
+
+        } else {
+            printf("Wrong Password\n");
+            Login();
+        }
+    }
+}
+int CharCounting(char tocount[50]){
+    int count=0;
+    for(int i=0;i<50;i++){
+        if(tocount[i]=='\0'){
+            break;
+        }else{
+            count++;
+        }
+    }
+    return count;
+}
+void Cmparemail(char Userinput[50]){
+    int found=0;
+    int sec= CharCounting(Userinput);
+    for(int gcc=0;gcc<SIZE;gcc++){
+        int first= CharCounting(db[gcc].email);
+        if(first==sec){
+            for(int i=0;i<first;i++){
+                if(Userinput[i]==db[gcc].email[i]){
+                    found++;
+                }else{
+                    break;
+                }
+            }
+        }
+        if(found==sec){
+            efound=gcc;
+            break;
+
+        }
+    }
+
+}
+void Passchecking(char pass[50],int userindex){
+    int pcount=0;
+    int sec= CharCounting(pass);
+    int first= CharCounting(db[userindex].password);
+        if(sec==first){
+            for(int gcc=0;gcc<first;gcc++){
+                if(pass[gcc]==db[efound].password[gcc]){
+                    pcount++;
+                }else{
+                    break;
+                }
+            }
+            if(pcount==sec){
+                pfound = 1;
+            }
+        }
+    }
+void checking_registration(char userinput[50]){
+    int check=0;
+    int first= CharCounting(userinput);
+     for(int i=0;i<globalindex;i++){
+        int sec= CharCounting(db[i].email);
+        if(sec==first){
+            for(int gcc=0;gcc<sec;gcc++){
+                if(userinput[gcc]==db[i].email[gcc]){
+                    check++;
+                }else{
+                    break;
+                }
+            }
+        }
+        if(check==sec){
+            checkmail=1;
+        }
+    }
+}
+void Registraion(void){
+    
+       char mail[50];
+        for(int i=0;i<recount+1;i++) {
+            printf("    Registration Email     \n");
+            printf("Enter email to register:  ");
+            scanf("%s", mail);
+            checkmail = -1;
+            checking_registration(mail);
+            if (checkmail == 1) {
+                printf("Email is Already Used.Try other email or Log in");
+                Registraion();
+
+            } else {
+                printf("Enter age: ");
+                scanf("%d",&db[i].age);
+                printf("Enter name: ");
+                scanf("%s",db[i].name);
+                printf("Enter password: ");
+                scanf("%s",db[i].password);
+            }
+        }
+        Adding_datatofile();
+}
+void add_data(void){
+    Reading_datafromfile();
+    for(int i=0;i<globalindex;i++){
+        printf("name = %s - age = %d - Email = %s - Password = %s\n",db[i].name,db[i].age,db[i].email,db[i].password);
+    }
+}
+void Usersection(void){
+    int num=0;
+    printf("Enter Manual: ");
+    scanf("%d",&num);
+    if(num==1){
+         Reading_datafromfile();
+         Registraion();
+    }else if(num==2){
+        Reading_datafromfile();
+        Login();
+    }else if(num==3){
+        exit;
+    }
+}
